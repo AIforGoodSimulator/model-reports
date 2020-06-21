@@ -1,0 +1,3 @@
+[![nbviewer](https://img.shields.io/badge/view%20on-nbviewer-brightgreen.svg)](https://nbviewer.jupyter.org/github/AIforGoodSimulator/compartmental-model/blob/master/Visualisation/COVID19%20report%20Moria%20V1.ipynb)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AIforGoodSimulator/compartmental-model/master?filepath=Visualisation%2FCOVID19%20report%20Moria%20V1.ipynb)
+
+Click the nbviewer badge above to view the notebook in HTML which display the tables in the correct styling or click the binder badge above to launch the report in your web browser to fully interact with it
