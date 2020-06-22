@@ -38,63 +38,10 @@ def population_breakdown(camp_name):
         dict(selector="caption",props=caption_props)
       ]
     population_frame=(population_frame.style
-    .set_caption(f'Population breakdown of {camp_name} camp with {int(total_population)} residents')
+    .set_caption('Population breakdown of Moria camp with 18700 residents')
     .hide_index()
     .set_table_styles(styles))
     return population_frame
-
-#find out first occurance of death
-def first_death_instance(df,display=True):
-    #calculate Peak Day IQR and Peak Number IQR for each of the 'incident' variables to table
-    table_param='Deaths'
-    grouped=df.groupby(['R0','latentRate','removalRate','hospRate','deathRateICU','deathRateNoIcu'])
-    first_deaths={}
-    for index, group in grouped:
-        #for each RO value find out the peak days for each table params
-        group=group.set_index('Time')
-        if ((group[table_param]>=1).idxmax()).item()!=0.0:
-            first_deaths[index]=(group[table_param]>=1).idxmax()
-    iqr_table={}
-    q75_day, q25_day = np.percentile(list(first_deaths.values()), [75 ,25])
-    iqr_table[table_param]=(int(round(q25_day)), int(round(q75_day)))
-    table_columns={'Deaths':'First incidence of death since the virus first arrives in the camp'}
-    outcome=[]
-    outcome.append(table_columns[table_param])
-    peak_day=[]
-    peak_day.append(f'{iqr_table[table_param][0]}-{iqr_table[table_param][1]}')
-    data={'Outcome':outcome,'Estimated Day':peak_day}
-    first_death_table=pd.DataFrame.from_dict(data)
-    if display:
-        th_props = [
-            ('font-size', '15px'),
-            ('text-align', 'center'),
-            ('font-weight', 'bold'),
-            ('color', '#6d6d6d'),
-            ('background-color', '#f7f7f9')
-            ]
-
-        # Set CSS properties for td elements in dataframe
-        td_props = [
-            ('font-size', '15px'),
-            ('text-align', 'center')
-            ]
-        caption_props = [
-            ('font-size','15px'),
-            ('text-align', 'center')
-        ]
-        # Set table styles
-
-        styles = [
-            dict(selector="th", props=th_props),
-            dict(selector="td", props=td_props),
-            dict(selector="caption",props=caption_props)
-          ]
-        first_death_table_out=(first_death_table.style
-         .set_caption('Estimated first incidence of deaths in all simulations')
-         .hide_index()
-         .set_table_styles(styles))
-        return first_death_table_out
-    return first_death_table
 
 def prevalence_all_table(df,display=True):
     #calculate Peak Day IQR and Peak Number IQR for each of the 'incident' variables to table
@@ -380,22 +327,13 @@ def cumulative_iso_table(timing=True,display=True):
 
     return cumulative_table_out
 
-def prepare_populationFrame(camp_name):
-    raw_data=pd.read_csv('./camp_info/camp_params.csv')
-    population_frame = raw_data[raw_data.Camp==camp_name].reset_index()
-    population_vector = np.asarray(population_frame.Population_structure)
-    population_vector = population_vector*0.01
-    population_size = np.float(population_frame.Total_population[0])
-    return population_vector, population_size
-
-def cumulative_all_table(df,camp,display=True):
+def cumulative_all_table(df,display=True):
     #now we try to calculate the total count
     #cases: (N-exposed)*0.5 since the asymptomatic rate is 0.5
     #hopistal days: cumulative count of hospitalisation bucket
     #critical days: cumulative count of critical days
     #deaths: we already have that from the frame
-    #we need to read in the camp frame to help automating the pipeline
-    population_vector, N = prepare_populationFrame(camp)
+    N=18700
     table_params=['Susceptible','Hospitalised','Critical','Deaths']
     grouped=df.groupby(['R0','latentRate','removalRate','hospRate','deathRateICU','deathRateNoIcu'])
     cumulative_all={}
@@ -413,14 +351,14 @@ def cumulative_all_table(df,camp,display=True):
                 param5059='Susceptible: 50-59'
                 param6069='Susceptible: 60-69'
                 param7079='Susceptible: 70+'
-                cumulative[param]=((N*population_vector[0]-(group[param09].tail(1).values[0]))*0.4+
-                                    (N*population_vector[1]-(group[param1019].tail(1).values[0]))*0.25+
-                                    (N*population_vector[2]-(group[param2029].tail(1).values[0]))*0.37+
-                                    (N*population_vector[3]-(group[param3039].tail(1).values[0]))*0.42+
-                                    (N*population_vector[4]-(group[param4049].tail(1).values[0]))*0.51+
-                                    (N*population_vector[5]-(group[param5059].tail(1).values[0]))*0.59+
-                                    (N*population_vector[6]-(group[param6069].tail(1).values[0]))*0.72+
-                                    (N*population_vector[7]-(group[param7079].tail(1).values[0]))*0.76)
+                cumulative[param]=((N*0.2105-(group[param09].tail(1).values[0]))*0.4+
+                                    (N*0.1734-(group[param1019].tail(1).values[0]))*0.25+
+                                    (N*0.2635-(group[param2029].tail(1).values[0]))*0.37+
+                                    (N*0.1716-(group[param3039].tail(1).values[0]))*0.42+
+                                    (N*0.0924-(group[param4049].tail(1).values[0]))*0.51+
+                                    (N*0.0555-(group[param5059].tail(1).values[0]))*0.59+
+                                    (N*0.0254-(group[param6069].tail(1).values[0]))*0.72+
+                                    (N*0.0077-(group[param7079].tail(1).values[0]))*0.76)
             elif param=='Deaths':
                 cumulative[param]=(group[param].tail(1).values[0])
             elif param=='Hospitalised' or param=='Critical':
