@@ -78,6 +78,8 @@ def population_breakdown(camp_name):
         dict(selector="td", props=td_props),
         dict(selector="caption",props=caption_props)
       ]
+
+    camp_name='Hamam-al-Alil 2'
     population_frame=(population_frame.style
     .set_caption(f'Population breakdown of {camp_name} camp with {int(total_population)} residents')
     .hide_index()
@@ -1052,12 +1054,12 @@ def effectiveness_cum_table_onetype(baseline,prefix,camp_name,caption='Placehold
     selectedInterventions={intervention_dict[k]: v for k, v in sorted(selectedInterventions.items(), key=lambda item: item[0])}
     return effectiveness_cum_table(baseline,selectedInterventions,camp_name,caption=caption,display=display)
 
-def effectiveness_cum_table_custom(baseline,caption='Placeholder',display=True):
-    folder_path='./model_outcomes/custom/'
-    selectedInterventions=load_interventions(folder_path)
+def effectiveness_cum_table_custom(baseline,camp_name,caption='Placeholder',display=True):
+    folder_path=os.path.join('model_outcomes',camp_name,'custom')
+    selectedInterventions=load_interventions(folder_path,camp_name)
     #sort the collection of interventions by their keys
     selectedInterventions={k: v for k, v in sorted(selectedInterventions.items(), key=lambda item: item[0])}
-    return effectiveness_cum_table(baseline,selectedInterventions,caption=caption,display=display)
+    return effectiveness_cum_table(baseline,selectedInterventions,camp_name,caption=caption,display=display)
 
 def effectiveness_cum_table_hygiene(baseline,camp_name,timing=True):
     folder_path=os.path.join('model_outcomes',camp_name,'one_intervention')
